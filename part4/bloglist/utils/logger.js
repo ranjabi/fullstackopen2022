@@ -1,17 +1,9 @@
-const error = (error, request, response, next) => {
-  console.error(error.message)
-
-  if (error.name === 'CastError') {
-    return response.status(400).send({ error: 'malformatted id' })
-  } else if (error.name === 'ValidationError') {
-    return response.status(400).json({ error: error.message })
-  }
-
-  next(error)
+const info = (...params) => {
+  console.log(...params)
 }
 
-const info = (message) => {
-  console.log(message)
+const error = (...params) => {
+  console.error(...params)
 }
 
 module.exports = {
