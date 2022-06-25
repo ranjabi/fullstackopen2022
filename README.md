@@ -8,3 +8,4 @@ Repository Contents:
 - [Part 1 - Introduction to React](https://github.com/ranjabi/fullstackopen2022/tree/main/part1)
 - [Part 2 - Communicating with server](https://github.com/ranjabi/fullstackopen2022/tree/main/part2)
 - [Part 3 - Programming a server with NodeJS and Express](https://github.com/ranjabi/phonebook-be)
+- [Part 4 - Testing Express servers, user administration](https://github.com/ranjabi/fullstackopen2022/tree/main/part4/bloglist)
