@@ -15,7 +15,10 @@ const App = () => {
   const [message, setMessage] = useState(null)
 
   useEffect(() => {
-    blogService.getAll().then((blogs) => setBlogs(blogs)).then(console.log(blogs))
+    blogService
+      .getAll()
+      .then((blogs) => setBlogs(blogs))
+      .then(console.log(blogs))
   }, [])
 
   useEffect(() => {
@@ -55,8 +58,6 @@ const App = () => {
     setUser(null)
     window.localStorage.removeItem('loggedBlogappUser')
   }
-
-  
 
   const loginForm = () => (
     <>
@@ -104,9 +105,16 @@ const App = () => {
             />
           </Togglable>
 
-          {blogs.sort((a,b)=>b.likes-a.likes).map((blog) => (
-            <Blog key={blog.id} blog={blog} blogs={blogs} setBlogs={setBlogs} />
-          ))}
+          {blogs
+            .sort((a, b) => b.likes - a.likes)
+            .map((blog) => (
+              <Blog
+                key={blog.id}
+                blog={blog}
+                blogs={blogs}
+                setBlogs={setBlogs}
+              />
+            ))}
         </div>
       )}
     </div>

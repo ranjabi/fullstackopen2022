@@ -1,14 +1,17 @@
 import React, { useState } from 'react'
 import blogService from '../services/blogs'
+import PropTypes from 'prop-types'
 
 const BlogForm = ({ blogs, setBlogs, setMessage }) => {
-  
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
 
+  // const blogFormRef = useRef()
+
   const addBlog = async (event) => {
     event.preventDefault()
+    // blogFormRef.current.toggleVisibility()
     let newBlog = { title, author, url, likes: 0 }
     blogService.create(newBlog)
     setBlogs([...blogs, newBlog])
@@ -47,6 +50,12 @@ const BlogForm = ({ blogs, setBlogs, setMessage }) => {
       </form>
     </>
   )
+}
+
+BlogForm.propTypes = {
+  blogs: PropTypes.array.isRequired,
+  setBlogs: PropTypes.func.isRequired,
+  setMessage: PropTypes.func.isRequired
 }
 
 export default BlogForm
