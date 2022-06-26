@@ -3,6 +3,8 @@ import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import Notification from './components/Notification'
+import BlogForm from './components/BlogForm'
+import Togglable from './components/Togglable'
 import './App.css'
 
 const App = () => {
@@ -11,13 +13,9 @@ const App = () => {
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
   const [message, setMessage] = useState(null)
-  const [newBlog, setNewBlog] = useState(null)
-  const [title, setTitle] = useState('')
-  const [author, setAuthor] = useState('')
-  const [url, setUrl] = useState('')
 
   useEffect(() => {
-    blogService.getAll().then((blogs) => setBlogs(blogs))
+    blogService.getAll().then((blogs) => setBlogs(blogs)).then(console.log(blogs))
   }, [])
 
   useEffect(() => {
@@ -58,25 +56,12 @@ const App = () => {
     window.localStorage.removeItem('loggedBlogappUser')
   }
 
-  const addBlog = async (event) => {
-    event.preventDefault()
-    let newBlog = { title, author, url }
-    blogService.create(newBlog)
-    setBlogs([...blogs, newBlog])
-    setMessage(`a new blog ${title} by ${author} added`)
-      setTimeout(() => {
-        setMessage(null)
-      }, 3000)
-    setTitle('')
-    setAuthor('')
-    setUrl('')
-
-  }
+  
 
   const loginForm = () => (
     <>
       <h2>log in to application</h2>
-      <Notification type='error' message={message} />
+      <Notification type="error" message={message} />
       <form onSubmit={handleLogin}>
         <div>
           username
@@ -101,48 +86,26 @@ const App = () => {
     </>
   )
 
-  const blogForm = () => (
-    
-    <>
-      <h2>create new</h2>
-      <form onSubmit={addBlog}>
-        <div>
-          title:
-          <input
-            value={title}
-            onChange={({ target }) => setTitle(target.value)}
-          />
-        </div>
-        <div>
-          author:
-          <input
-            value={author}
-            onChange={({ target }) => setAuthor(target.value)}
-          />
-        </div>
-        <div>
-          url:
-          <input value={url} onChange={({ target }) => setUrl(target.value)} />
-        </div>
-        <button type="submit">create</button>
-      </form>
-    </>
-  )
-
   return (
     <div>
-      
       {user === null ? (
         loginForm()
       ) : (
         <div>
           <h2>blogs</h2>
-          <Notification type='success' message={message} />
+          <Notification type="success" message={message} />
           <p>{user.name} logged-in</p>
           <button onClick={handleLogout}>logout</button>
-          {blogForm()}
-          {blogs.map((blog) => (
-            <Blog key={blog.id} blog={blog} />
+          <Togglable buttonLabel="new blogs">
+            <BlogForm
+              blogs={blogs}
+              setBlogs={setBlogs}
+              setMessage={setMessage}
+            />
+          </Togglable>
+
+          {blogs.sort((a,b)=>b.likes-a.likes).map((blog) => (
+            <Blog key={blog.id} blog={blog} blogs={blogs} setBlogs={setBlogs} />
           ))}
         </div>
       )}
