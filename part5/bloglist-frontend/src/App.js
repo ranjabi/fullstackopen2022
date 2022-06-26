@@ -59,6 +59,13 @@ const App = () => {
     window.localStorage.removeItem('loggedBlogappUser')
   }
 
+  const addBlog = (blogObject) => {
+    blogFormRef.current.toggleVisibility()
+    blogService.create(blogObject).then((returnedBlog) => {
+      setBlogs(blogs.concat(returnedBlog))
+    })
+  }
+
   const loginForm = () => (
     <>
       <h2>log in to application</h2>
@@ -99,9 +106,8 @@ const App = () => {
           <button onClick={handleLogout}>logout</button>
           <Togglable buttonLabel="new blogs">
             <BlogForm
-              blogs={blogs}
-              setBlogs={setBlogs}
               setMessage={setMessage}
+              createBlog={addBlog}
             />
           </Togglable>
 
