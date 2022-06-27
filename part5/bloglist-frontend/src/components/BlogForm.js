@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 // import PropTypes from 'prop-types'
 
-const BlogForm = ({ setMessage, createBlog }) => {
+const BlogForm = ({ createBlog }) => {
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
@@ -9,12 +9,11 @@ const BlogForm = ({ setMessage, createBlog }) => {
   const addBlog = (event) => {
     event.preventDefault()
     // blogFormRef.current.toggleVisibility()
-    let newBlog = { title, author, url, likes: 0 }
-    createBlog(newBlog)
-    setMessage(`a new blog ${title} by ${author} added`)
-    setTimeout(() => {
-      setMessage(null)
-    }, 3000)
+    createBlog({
+      title: title,
+      author: author,
+      url: url
+    })
     setTitle('')
     setAuthor('')
     setUrl('')
@@ -29,6 +28,7 @@ const BlogForm = ({ setMessage, createBlog }) => {
           <input
             value={title}
             onChange={({ target }) => setTitle(target.value)}
+            placeholder="the title"
           />
         </div>
         <div>
@@ -36,11 +36,16 @@ const BlogForm = ({ setMessage, createBlog }) => {
           <input
             value={author}
             onChange={({ target }) => setAuthor(target.value)}
+            placeholder="the author"
           />
         </div>
         <div>
           url:
-          <input value={url} onChange={({ target }) => setUrl(target.value)} />
+          <input
+            value={url}
+            onChange={({ target }) => setUrl(target.value)}
+            placeholder="the url"
+          />
         </div>
         <button type="submit">create</button>
       </form>

@@ -60,7 +60,6 @@ const App = () => {
   }
 
   const addBlog = (blogObject) => {
-    blogFormRef.current.toggleVisibility()
     blogService.create(blogObject).then((returnedBlog) => {
       setBlogs(blogs.concat(returnedBlog))
     })
@@ -94,6 +93,15 @@ const App = () => {
     </>
   )
 
+  const handleLikeOf = async (id) => {
+    const findBlog = blogs.find(e => e.id === id)
+    const changedBlog = { ...findBlog, likes: findBlog.likes+1 }
+
+    const returnedBlog = await blogService.update(id, changedBlog)
+    setBlogs(blogs.map(blog => blog.id !== id ? blog : returnedBlog))
+    // setLikes(likes + 1)
+  }
+
   return (
     <div>
       {user === null ? (
@@ -105,10 +113,7 @@ const App = () => {
           <p>{user.name} logged-in</p>
           <button onClick={handleLogout}>logout</button>
           <Togglable buttonLabel="new blogs">
-            <BlogForm
-              setMessage={setMessage}
-              createBlog={addBlog}
-            />
+            <BlogForm setMessage={setMessage} createBlog={addBlog} />
           </Togglable>
 
           {blogs
@@ -119,6 +124,7 @@ const App = () => {
                 blog={blog}
                 blogs={blogs}
                 setBlogs={setBlogs}
+                handleLike={() => handleLikeOf(blog.id)}
               />
             ))}
         </div>

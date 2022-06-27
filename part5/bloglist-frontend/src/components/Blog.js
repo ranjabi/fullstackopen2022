@@ -1,10 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import blogService from '../services/blogs'
 
-const Blog = ({ blog, setBlogs, blogs }) => {
-  const [likes, setLikes] = useState(blog.likes)
-
-  useEffect(() => {}, [])
+const Blog = ({ blog, setBlogs, blogs, handleLike }) => {
+  const [detail, setDetail] = useState(false)
 
   const blogStyle = {
     paddingTop: 10,
@@ -14,21 +12,8 @@ const Blog = ({ blog, setBlogs, blogs }) => {
     marginBottom: 5,
   }
 
-  const [detail, setDetail] = useState(false)
-
   const handleDetail = () => {
     setDetail(!detail)
-  }
-
-  const handleLike = async (blog) => {
-    await blogService.update(blog.id, {
-      user: blog.user.id,
-      likes: likes + 1,
-      author: blog.author,
-      title: blog.title,
-      url: blog.url,
-    })
-    setLikes(likes + 1)
   }
 
   const handleRemove = async (blog) => {
@@ -38,21 +23,19 @@ const Blog = ({ blog, setBlogs, blogs }) => {
     }
   }
 
+  const detailClass = { display: detail ? '' : 'none' }
+
   return (
-    <div style={blogStyle}>
-      {blog.title}
-      {blog.id}{' '}
+    <div style={blogStyle} className="blog">
+      <span>{blog.title}</span> <span>{blog.author}</span>{' '}
       <button onClick={handleDetail}>{detail ? 'hide' : 'view'}</button>
       <br />
-      {detail ? (
-        <>
-          {blog.url}
-          <br />
-          likes {likes} <button onClick={() => handleLike(blog)}>like</button>
-          <br /> {blog.author} <br />{' '}
-          <button onClick={() => handleRemove(blog)}>remove</button>
-        </>
-      ) : null}
+      <div style={detailClass} className="detailContent">
+        <span>{blog.url}</span>
+        <br />
+        likes {blog.likes} <button onClick={handleLike}>like</button>
+        <br /> <button onClick={() => handleRemove(blog)}>remove</button>
+      </div>
     </div>
   )
 }
