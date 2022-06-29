@@ -66,8 +66,9 @@ const BlogItem = ({ blog, setBlogs, blogs, handleLike, username, id }) => {
         </AccordionButton>
         <AccordionPanel pb={6}>
           <Box>
-          <Link href='https://chakra-ui.com' isExternal>{blog.url} <ExternalLinkIcon mx='2px' />
-</Link>
+            <Link href="https://chakra-ui.com" isExternal>
+              {blog.url} <ExternalLinkIcon mx="2px" />
+            </Link>
             <Flex alignItems="flex-end" gap="2">
               {blog.user.username === username || blog.user === id ? (
                 <IconButton
@@ -77,8 +78,9 @@ const BlogItem = ({ blog, setBlogs, blogs, handleLike, username, id }) => {
                   size="sm"
                   icon={<DeleteIcon />}
                 />
-              ) : null }
+              ) : null}
               <Button
+                onClick={handleLike}
                 mt="1"
                 size="sm"
                 rightIcon={<Icon as={FaThumbsUp} />}
