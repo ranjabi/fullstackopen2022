@@ -1,11 +1,34 @@
 import { useState, useEffect } from 'react'
-import Blog from './components/Blog'
+import BlogItem from './components/BlogItem'
 import blogService from './services/blogs'
 import loginService from './services/login'
+import registerService from './services/register'
 import Notification from './components/Notification'
 import BlogForm from './components/BlogForm'
 import Togglable from './components/Togglable'
-import './App.css'
+// import './App.css'
+import { ChakraProvider } from '@chakra-ui/react'
+import LoginForm from './components/LoginForm'
+import {
+  Alert,
+  AlertIcon,
+  AlertTitle,
+  AlertDescription,
+  extendTheme,
+} from '@chakra-ui/react'
+import Navbar from './components/Navbar'
+import Blogs from './components/Blogs'
+import ToggleButton from './components/ToggleButton'
+
+// const theme = extendTheme({
+//   components: {
+//     Container: {
+//       defaultProps: {
+//         maxWidth: '62em',
+//       },
+//     },
+//   },
+// })
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -13,12 +36,14 @@ const App = () => {
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
   const [message, setMessage] = useState(null)
+  const [filter, setFilter] = useState('AllBlog')
+  const [messageType, setMessageType] = useState(null)
 
   useEffect(() => {
     blogService
       .getAll()
       .then((blogs) => setBlogs(blogs))
-      .then(console.log(blogs))
+      .then(console.log('blogservce use effect', blogs))
   }, [])
 
   useEffect(() => {
@@ -26,9 +51,22 @@ const App = () => {
     if (loggenUserJSON) {
       const user = JSON.parse(loggenUserJSON)
       setUser(user)
+      console.log('user useeffect', user)
       blogService.setToken(user.token)
     }
   }, [])
+
+  const myBlogHandler = () => {
+      setFilter('MyBlog')
+      console.log(blogs, 'my blogs')
+    console.log(filter, username, 'set to true')
+  }
+
+  const allBlogHandler = () => {
+      setFilter('AllBlog')
+    console.log(blogs, 'all blogs')
+    console.log(filter, 'set to false')
+  }
 
   const handleLogin = async (event) => {
     event.preventDefault()
@@ -43,11 +81,41 @@ const App = () => {
       blogService.setToken(user.token)
 
       setUser(user)
-      console.log('logging in with', username, password)
+      console.log(username, 'logged in')
       setUsername('')
       setPassword('')
     } catch (exception) {
       setMessage('Wrong credentials')
+      setTimeout(() => {
+        setMessage(null)
+      }, 3000)
+    }
+  }
+
+  const registerHandler = async () => {
+    event.preventDefault()
+
+    try {
+      const user = await registerService.register({
+        username,
+        username,
+        password,
+      })
+
+      setMessageType('success')
+      setMessage('Register success. Now you can continue to login.')
+
+      setTimeout(() => {
+        setMessage(null)
+      }, 3000)
+
+      setUsername('')
+      setPassword('')
+    } catch (exception) {
+      setUsername('')
+      setPassword('')
+      setMessageType('error')
+      setMessage('Username must be unique')
       setTimeout(() => {
         setMessage(null)
       }, 3000)
@@ -61,75 +129,67 @@ const App = () => {
 
   const addBlog = (blogObject) => {
     blogService.create(blogObject).then((returnedBlog) => {
-      setBlogs(blogs.concat(returnedBlog))
+      setBlogs([...blogs, returnedBlog])
+      console.log('add blog', returnedBlog)
+      console.log(user.id)
+      console.log(returnedBlog.user)
+      console.log(returnedBlog.user.username)
     })
   }
 
-  const loginForm = () => (
-    <>
-      <h2>log in to application</h2>
-      <Notification type="error" message={message} />
-      <form onSubmit={handleLogin}>
-        <div>
-          username
-          <input
-            type="text"
-            value={username}
-            name="Username"
-            onChange={({ target }) => setUsername(target.value)}
-          />
-        </div>
-        <div>
-          password
-          <input
-            type="password"
-            value={password}
-            name="Password"
-            onChange={({ target }) => setPassword(target.value)}
-          />
-        </div>
-        <button type="submit">login</button>
-      </form>
-    </>
-  )
-
   const handleLikeOf = async (id) => {
-    const findBlog = blogs.find(e => e.id === id)
-    const changedBlog = { ...findBlog, likes: findBlog.likes+1 }
+    const findBlog = blogs.find((e) => e.id === id)
+    const changedBlog = { ...findBlog, likes: findBlog.likes + 1 }
 
     const returnedBlog = await blogService.update(id, changedBlog)
-    setBlogs(blogs.map(blog => blog.id !== id ? blog : returnedBlog))
+    setBlogs(blogs.map((blog) => (blog.id !== id ? blog : returnedBlog)))
     // setLikes(likes + 1)
   }
 
-  return (
-    <div>
-      {user === null ? (
-        loginForm()
-      ) : (
-        <div>
-          <h2>blogs</h2>
-          <Notification type="success" message={message} />
-          <p>{user.name} logged-in</p>
-          <button onClick={handleLogout}>logout</button>
-          <Togglable buttonLabel="new blogs">
-            <BlogForm setMessage={setMessage} createBlog={addBlog} />
-          </Togglable>
+  const FILTER_MAP = {
+    AllBlog: () => true,
+    MyBlog: blog => blog.user.username === user.username || blog.user === user.id
+  };
 
-          {blogs
-            .sort((a, b) => b.likes - a.likes)
-            .map((blog) => (
-              <Blog
-                key={blog.id}
-                blog={blog}
-                blogs={blogs}
-                setBlogs={setBlogs}
-                handleLike={() => handleLikeOf(blog.id)}
-              />
-            ))}
-        </div>
-      )}
-    </div>
+  return (
+    <ChakraProvider>
+      <div>
+        {user === null ? (
+          <LoginForm
+            handleLogin={handleLogin}
+            registerHandler={registerHandler}
+            username={username}
+            setUsername={setUsername}
+            password={password}
+            setPassword={setPassword}
+            message={message}
+            messageType={messageType}
+          />
+        ) : (
+          <div>
+            <Navbar username={user.username} handleLogout={handleLogout} />
+            <Notification type="success" message={message} />
+            <ToggleButton
+              myBlogHandler={myBlogHandler}
+              allBlogHandler={allBlogHandler}
+            >
+              <Togglable buttonLabel="Add Blog">
+                <BlogForm setMessage={setMessage} createBlog={addBlog} />
+              </Togglable>
+            </ToggleButton>
+
+            <Blogs
+              username={user.username}
+              id={user.id}
+              blogs={blogs.filter(FILTER_MAP[filter])
+              }
+              setBlogs={setBlogs}
+              handleLikeOf={handleLikeOf}
+            />
+          </div>
+        )}
+      </div>
+    </ChakraProvider>
   )
 }
 
