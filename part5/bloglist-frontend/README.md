@@ -3,6 +3,8 @@
 
 Save and manage your list of favorite blogs. See other's blog list and give a like to their collections if you find it interesting.
 
+Visit at https://bloglist-chakraui.herokuapp.com/.
+
 
 ## Screenshots
 | Manage Blog List Section       |   New Blog Section       |
