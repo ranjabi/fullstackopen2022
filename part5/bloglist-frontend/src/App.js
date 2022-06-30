@@ -15,6 +15,7 @@ import {
   AlertTitle,
   AlertDescription,
   extendTheme,
+  Box,
 } from '@chakra-ui/react'
 import Navbar from './components/Navbar'
 import Blogs from './components/Blogs'
@@ -57,13 +58,13 @@ const App = () => {
   }, [])
 
   const myBlogHandler = () => {
-      setFilter('MyBlog')
-      console.log(blogs, 'my blogs')
+    setFilter('MyBlog')
+    console.log(blogs, 'my blogs')
     console.log(filter, username, 'set to true')
   }
 
   const allBlogHandler = () => {
-      setFilter('AllBlog')
+    setFilter('AllBlog')
     console.log(blogs, 'all blogs')
     console.log(filter, 'set to false')
   }
@@ -148,8 +149,9 @@ const App = () => {
 
   const FILTER_MAP = {
     AllBlog: () => true,
-    MyBlog: blog => blog.user.username === user.username || blog.user === user.id
-  };
+    MyBlog: (blog) =>
+      blog.user.username === user.username || blog.user === user.id,
+  }
 
   return (
     <ChakraProvider>
@@ -166,7 +168,7 @@ const App = () => {
             messageType={messageType}
           />
         ) : (
-          <div>
+          <Box>
             <Navbar username={user.username} handleLogout={handleLogout} />
             <Notification type="success" message={message} />
             <ToggleButton
@@ -181,12 +183,11 @@ const App = () => {
             <Blogs
               username={user.username}
               id={user.id}
-              blogs={blogs.filter(FILTER_MAP[filter])
-              }
+              blogs={blogs.filter(FILTER_MAP[filter])}
               setBlogs={setBlogs}
               handleLikeOf={handleLikeOf}
             />
-          </div>
+          </Box>
         )}
       </div>
     </ChakraProvider>
