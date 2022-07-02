@@ -1,22 +1,7 @@
 import React, { useState } from 'react'
 // import PropTypes from 'prop-types'
-import {
-  Container,
-  VStack,
-  Heading,
-  Center,
-  FormControl,
-  FormLabel,
-  Input,
-  Box,
-  Button,
-  HStack,
-  Spacer,
-  Flex,
-  Text,
-} from '@chakra-ui/react'
 
-const BlogForm = ({ createBlog, toggleVisibility }) => {
+const BlogForm = ({ createBlog }) => {
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
@@ -27,14 +12,15 @@ const BlogForm = ({ createBlog, toggleVisibility }) => {
     createBlog({
       title: title,
       author: author,
-      url: url,
+      url: url
     })
     setTitle('')
     setAuthor('')
     setUrl('')
   }
-  {
-    /* <>
+
+  return (
+    <>
       <h2>create new</h2>
       <form onSubmit={addBlog}>
         <div>
@@ -63,44 +49,7 @@ const BlogForm = ({ createBlog, toggleVisibility }) => {
         </div>
         <button type="submit">create</button>
       </form>
-    </> */
-  }
-  return (
-    <form onSubmit={addBlog}>
-      <VStack px='5' py='5' my='4' justifySelf="flex-start" spacing="4" border='1px' borderColor='gray.200' borderRadius='md'>
-        <FormControl>
-          <FormLabel>Title</FormLabel>
-          <Input
-          value={title}
-            size="sm"
-            placeholder="Title"
-            onChange={({ target }) => setTitle(target.value)}
-          />
-        </FormControl>
-        <FormControl>
-          <FormLabel>Author</FormLabel>
-          <Input
-          value={author}
-            size="sm"
-            placeholder="Author"
-            onChange={({ target }) => setAuthor(target.value)}
-          />
-        </FormControl>
-        <FormControl>
-          <FormLabel>Url</FormLabel>
-          <Input
-          value={url}
-            size="sm"
-            placeholder="Url"
-            onChange={({ target }) => setUrl(target.value)}
-          />
-        </FormControl>
-        <Flex w='full' justifyContent='flex-start'>
-          <Button type='submit' colorScheme="teal">Submit</Button>
-          {/* <Button onClick={toggleVisibility}>Cancel</Button> */}
-        </Flex>
-      </VStack>
-    </form>
+    </>
   )
 }
 
