@@ -1,5 +1,12 @@
 import { useState } from 'react'
-import { useMatch, Routes, Route, Link, useParams, useNavigate } from 'react-router-dom'
+import {
+  useMatch,
+  Routes,
+  Route,
+  Link,
+  useParams,
+  useNavigate,
+} from 'react-router-dom'
 import { useField } from './hooks/index'
 
 const Menu = () => {
@@ -37,9 +44,11 @@ const AnecdoteList = ({ anecdotes }) => (
 const Anecdote = ({ anecdote }) => {
   return (
     <div>
-      <h2>{anecdote.content}</h2>
+      <h2>{anecdote.content} by {anecdote.author}</h2>
       <p>has {anecdote.votes} votes</p>
-      <p>for more info see <a href='{anecdote.info}'>{anecdote.info}</a> </p>
+      <p>
+        for more info see <a href="{anecdote.info}">{anecdote.info}</a>{' '}
+      </p>
     </div>
   )
 }
@@ -78,9 +87,9 @@ const Footer = () => (
 )
 
 const CreateNew = (props) => {
-  const content = useField('text')
-  const author = useField('text')
-  const info = useField('text')
+  const {reset: resetContent, ...content} = useField('text')
+  const {reset: resetAuthor, ...author} = useField('text')
+  const {reset: resetInfo, ...info} = useField('text')
 
   const navigate = useNavigate()
 
@@ -102,29 +111,32 @@ const CreateNew = (props) => {
         <div>
           content
           <input
-            name={content.type}
-            value={content.value}
-            onChange={content.onChange}
+            {...content}
           />
         </div>
         <div>
           author
           <input
-            name={author.type}
-            value={author.value}
-            onChange={author.onChange}
+            {...author}
           />
         </div>
         <div>
           url for more info
           <input
-            name={info.type}
-            value={info.author}
-            onChange={info.onChange}
+            {...info}
           />
         </div>
-        <button>create</button>
+        <button type="submit">create</button>
       </form>
+        <button type="button"
+          onClick={() => {
+            resetContent()
+            resetAuthor()
+            resetInfo()
+          }}
+        >
+          reset
+        </button>
     </div>
   )
 }
@@ -148,7 +160,9 @@ const App = () => {
   ])
 
   const match = useMatch('/anecdotes/:id')
-  const anecdote = match ? anecdotes.find(e => e.id === Number(match.params.id)) : null
+  const anecdote = match
+    ? anecdotes.find((e) => e.id === Number(match.params.id))
+    : null
 
   const [notification, setNotification] = useState(null)
 
@@ -175,19 +189,22 @@ const App = () => {
   }
 
   return (
-      <div>
-        <h1>Software anecdotes</h1>
-        <Menu />
-        {notification !== null ? <p>{notification}</p> : null}
-        <Routes>
-          <Route path='/anecdotes/:id' element={<Anecdote anecdote={anecdote} />} />
-          <Route path="/create" element={<CreateNew addNew={addNew} />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/" element={<AnecdoteList anecdotes={anecdotes} />} />
-        </Routes>
+    <div>
+      <h1>Software anecdotes</h1>
+      <Menu />
+      {notification !== null ? <p>{notification}</p> : null}
+      <Routes>
+        <Route
+          path="/anecdotes/:id"
+          element={<Anecdote anecdote={anecdote} />}
+        />
+        <Route path="/create" element={<CreateNew addNew={addNew} />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/" element={<AnecdoteList anecdotes={anecdotes} />} />
+      </Routes>
 
-        <Footer />
-      </div>
+      <Footer />
+    </div>
   )
 }
 
