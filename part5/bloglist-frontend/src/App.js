@@ -94,11 +94,11 @@ const App = () => {
   )
 
   const handleLikeOf = async (id) => {
-    const findBlog = blogs.find(e => e.id === id)
-    const changedBlog = { ...findBlog, likes: findBlog.likes+1 }
+    const findBlog = blogs.find((e) => e.id === id)
+    const changedBlog = { ...findBlog, likes: findBlog.likes + 1 }
 
     const returnedBlog = await blogService.update(id, changedBlog)
-    setBlogs(blogs.map(blog => blog.id !== id ? blog : returnedBlog))
+    setBlogs(blogs.map((blog) => (blog.id !== id ? blog : returnedBlog)))
     // setLikes(likes + 1)
   }
 

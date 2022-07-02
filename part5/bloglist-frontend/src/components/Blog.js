@@ -27,7 +27,7 @@ const Blog = ({ blog, setBlogs, blogs, handleLike }) => {
 
   return (
     <div style={blogStyle} className="blog">
-      <span>{blog.title}</span> <span>{blog.author}</span>{' '}
+      <span>{blog.title} by {blog.author}</span>{' '}
       <button onClick={handleDetail}>{detail ? 'hide' : 'view'}</button>
       <br />
       <div style={detailClass} className="detailContent">
