@@ -115,18 +115,20 @@ const App = () => {
           <Togglable buttonLabel="new blogs">
             <BlogForm setMessage={setMessage} createBlog={addBlog} />
           </Togglable>
-
-          {blogs
-            .sort((a, b) => b.likes - a.likes)
-            .map((blog) => (
-              <Blog
-                key={blog.id}
-                blog={blog}
-                blogs={blogs}
-                setBlogs={setBlogs}
-                handleLike={() => handleLikeOf(blog.id)}
-              />
-            ))}
+          <div className="blog-list">
+            {blogs
+              .sort((a, b) => b.likes - a.likes)
+              .map((blog) => (
+                <Blog
+                  className="blog"
+                  key={blog.id}
+                  blog={blog}
+                  blogs={blogs}
+                  setBlogs={setBlogs}
+                  handleLike={() => handleLikeOf(blog.id)}
+                />
+              ))}
+          </div>
         </div>
       )}
     </div>

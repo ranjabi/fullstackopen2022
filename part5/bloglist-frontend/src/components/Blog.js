@@ -33,7 +33,7 @@ const Blog = ({ blog, setBlogs, blogs, handleLike }) => {
       <div style={detailClass} className="detailContent">
         <span>{blog.url}</span>
         <br />
-        likes {blog.likes} <button onClick={handleLike}>like</button>
+        likes {blog.likes} <button className='like-btn' onClick={handleLike}>like</button>
         <br /> <button onClick={() => handleRemove(blog)}>remove</button>
       </div>
     </div>
