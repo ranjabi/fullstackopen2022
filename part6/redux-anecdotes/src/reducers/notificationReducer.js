@@ -14,9 +14,18 @@ const notificationSlice = createSlice({
     },
     removeNotification() {
       return 'everything is good'
-    }
-  }
+    },
+  },
 })
+
+export const setNotifications = (message, time) => {
+  return async (dispatch) => {
+    dispatch(setNotification(message))
+    setTimeout(() => {
+      dispatch(removeNotification())
+    }, time)
+  }
+}
 
 export const { setNotification, removeNotification } = notificationSlice.actions
 export default notificationSlice.reducer

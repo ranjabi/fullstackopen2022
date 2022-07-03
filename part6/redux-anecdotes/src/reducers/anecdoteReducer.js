@@ -1,6 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit'
-
-const getId = () => (100000 * Math.random()).toFixed(0)
+import anecdoteService from '../services/anecdotes'
 
 const anecdoteSlice = createSlice({
   name: 'anecdotes',
@@ -18,19 +17,37 @@ const anecdoteSlice = createSlice({
         anecdote.id !== id ? anecdote : changedAnecdote
       )
     },
-    addAnecdote(state, action) {
-      state.push({ content: action.payload, id: getId(), votes: 0 })
-    },
     appendAnecdote(state, action) {
       state.push(action.payload)
     },
     setAnecdotes(state, action) {
       return action.payload
-    }
+    },
   },
 })
 
+export const initializeAnecdotes = () => {
+  return async (dispatch) => {
+    const anecdotes = await anecdoteService.getAll()
+    dispatch(setAnecdotes(anecdotes))
+  }
+}
+
+export const createAnecdote = (content) => {
+  return async (dispatch) => {
+    const newAnecdote = await anecdoteService.createNew(content)
+    dispatch(appendAnecdote(newAnecdote))
+  }
+}
+
+export const addVotes = (id) => {
+  return async (dispatch) => {
+    const anecdote = await anecdoteService.addVote(id)
+    dispatch(addVote(anecdote.id))
+  }
+}
+
 // plural actions
-export const { addVote, addAnecdote, appendAnecdote, setAnecdotes } = anecdoteSlice.actions
+export const { addVote, appendAnecdote, setAnecdotes } = anecdoteSlice.actions
 // singular reducer
 export default anecdoteSlice.reducer
