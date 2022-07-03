@@ -8,6 +8,13 @@ blogsRouter.get('/', async (request, response) => {
   response.json(blogs)
 })
 
+blogsRouter.get('/:id', async (request, response) => {
+  // const blogs = await Blog.find({}).populate('user', { username: 1, name: 1, id: 1 })
+  // response.json(blogs)
+  const blog = await Blog.findById(request.params.id)
+  response.json(blog)
+})
+
 const getTokenFrom = request => {
   // return bearer value
   const authorization = request.get('authorization')

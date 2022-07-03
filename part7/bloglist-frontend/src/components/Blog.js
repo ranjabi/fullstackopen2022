@@ -1,8 +1,11 @@
 import { useState } from 'react'
 import blogService from '../services/blogs'
+import { setBlogs } from '../reducers/blogReducer'
+import { useDispatch } from 'react-redux'
 
-const Blog = ({ blog, setBlogs, blogs, handleLike }) => {
+const Blog = ({ blog, blogs, handleLike }) => {
   const [detail, setDetail] = useState(false)
+  const dispatch = useDispatch()
 
   const blogStyle = {
     paddingTop: 10,
@@ -19,7 +22,7 @@ const Blog = ({ blog, setBlogs, blogs, handleLike }) => {
   const handleRemove = async (blog) => {
     if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
       await blogService.remove(blog.id)
-      setBlogs(blogs.filter((e) => e.id !== blog.id))
+      dispatch(setBlogs(blogs.filter((e) => e.id !== blog.id)))
     }
   }
 
@@ -27,6 +30,7 @@ const Blog = ({ blog, setBlogs, blogs, handleLike }) => {
 
   return (
     <div style={blogStyle} className="blog">
+      <p>{blog.id}</p>
       <span>{blog.title} by {blog.author}</span>{' '}
       <button onClick={handleDetail}>{detail ? 'hide' : 'view'}</button>
       <br />

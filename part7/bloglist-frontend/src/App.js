@@ -6,19 +6,22 @@ import Notification from './components/Notification'
 import BlogForm from './components/BlogForm'
 import Togglable from './components/Togglable'
 import './App.css'
+import { useDispatch, useSelector } from 'react-redux'
+import { setNotifications } from './reducers/messageReducer'
+import { addLikes, getBlogs, createBlog } from './reducers/blogReducer'
 
 const App = () => {
-  const [blogs, setBlogs] = useState([])
+  const dispatch = useDispatch()
+  const rawBlogs = useSelector((state) => state.blogs)
+  const sortedBlogs = [...rawBlogs].sort((a, b) => b.likes - a.likes)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-  const [message, setMessage] = useState(null)
+  // const [message, setMessage] = useState(null)
+  const message = useSelector((state) => state.message)
 
   useEffect(() => {
-    blogService
-      .getAll()
-      .then((blogs) => setBlogs(blogs))
-      .then(console.log(blogs))
+    dispatch(getBlogs())
   }, [])
 
   useEffect(() => {
@@ -47,10 +50,7 @@ const App = () => {
       setUsername('')
       setPassword('')
     } catch (exception) {
-      setMessage('Wrong credentials')
-      setTimeout(() => {
-        setMessage(null)
-      }, 3000)
+      dispatch(setNotifications('Wrong credentials', 3000))
     }
   }
 
@@ -60,9 +60,7 @@ const App = () => {
   }
 
   const addBlog = (blogObject) => {
-    blogService.create(blogObject).then((returnedBlog) => {
-      setBlogs(blogs.concat(returnedBlog))
-    })
+    dispatch(createBlog(blogObject))
   }
 
   const loginForm = () => (
@@ -94,11 +92,7 @@ const App = () => {
   )
 
   const handleLikeOf = async (id) => {
-    const findBlog = blogs.find((e) => e.id === id)
-    const changedBlog = { ...findBlog, likes: findBlog.likes + 1 }
-
-    const returnedBlog = await blogService.update(id, changedBlog)
-    setBlogs(blogs.map((blog) => (blog.id !== id ? blog : returnedBlog)))
+    dispatch(addLikes(id))
     // setLikes(likes + 1)
   }
 
@@ -113,21 +107,18 @@ const App = () => {
           <p>{user.name} logged-in</p>
           <button onClick={handleLogout}>logout</button>
           <Togglable buttonLabel="new blogs">
-            <BlogForm setMessage={setMessage} createBlog={addBlog} />
+            <BlogForm createBlog={addBlog} />
           </Togglable>
           <div className="blog-list">
-            {blogs
-              .sort((a, b) => b.likes - a.likes)
-              .map((blog) => (
-                <Blog
-                  className="blog"
-                  key={blog.id}
-                  blog={blog}
-                  blogs={blogs}
-                  setBlogs={setBlogs}
-                  handleLike={() => handleLikeOf(blog.id)}
-                />
-              ))}
+            {sortedBlogs.map((blog) => (
+              <Blog
+                className="blog"
+                key={blog.id}
+                blog={blog}
+                blogs={sortedBlogs}
+                handleLike={() => handleLikeOf(blog.id)}
+              />
+            ))}
           </div>
         </div>
       )}
