@@ -1,24 +1,12 @@
 import React from 'react'
-import { useSelector, useDispatch } from 'react-redux'
+import { connect } from 'react-redux'
 import { addVotes } from '../reducers/anecdoteReducer'
 import { setNotifications } from '../reducers/notificationReducer'
 
-const AnecdoteList = () => {
-  const filter = useSelector((state) => state.filter)
-  const anecdotes = useSelector((state) => {
-    const anecdotesCopy = [...state.anecdotes]
-    if (filter === '') {
-      return anecdotesCopy.sort((a, b) => b.votes - a.votes)
-    }
-    return anecdotesCopy
-      .sort((a, b) => b.votes - a.votes)
-      .filter((e) => e.content.toLowerCase().includes(filter.toLowerCase()))
-  })
-  const dispatch = useDispatch()
-
+const AnecdoteList = (props) => {
   return (
     <div>
-      {anecdotes.map((anecdote) => (
+      {props.anecdotes.map((anecdote) => (
         <div key={anecdote.id}>
           {/* <h1>{anecdote.id}</h1> */}
           <div>{anecdote.content}</div>
@@ -26,10 +14,8 @@ const AnecdoteList = () => {
             has {anecdote.votes}
             <button
               onClick={() => {
-                dispatch(addVotes(anecdote.id))
-                dispatch(
-                  setNotifications(`you voted '${anecdote.content}'`, 5000)
-                )
+                props.addVotes(anecdote.id)
+                props.setNotifications(`you voted '${anecdote.content}'`, 5000)
               }}
             >
               vote
@@ -41,4 +27,27 @@ const AnecdoteList = () => {
   )
 }
 
-export default AnecdoteList
+const mapStateToProps = (state) => {
+  const anecdotesCopy = [...state.anecdotes]
+  if (state.filter === '') {
+    return { anecdotes: anecdotesCopy.sort((a, b) => b.votes - a.votes) }
+  }
+  return {
+    anecdotes: anecdotesCopy
+      .sort((a, b) => b.votes - a.votes)
+      .filter((e) =>
+        e.content.toLowerCase().includes(state.filter.toLowerCase())
+      ),
+  }
+}
+
+const mapDispatchToProps = {
+  addVotes,
+  setNotifications,
+}
+
+const ConnectedAnecdotes = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(AnecdoteList)
+export default ConnectedAnecdotes
