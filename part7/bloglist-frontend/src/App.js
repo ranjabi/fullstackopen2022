@@ -9,6 +9,11 @@ import './App.css'
 import { useDispatch, useSelector } from 'react-redux'
 import { setNotifications } from './reducers/messageReducer'
 import { addLikes, getBlogs, createBlog } from './reducers/blogReducer'
+import { setLoggedin, setLoggedout } from './reducers/userReducer'
+
+import { useMatch, Routes, Route, Link } from 'react-router-dom'
+import UserList from './components/UserList'
+import BlogList from './components/BlogList'
 
 const App = () => {
   const dispatch = useDispatch()
@@ -16,7 +21,7 @@ const App = () => {
   const sortedBlogs = [...rawBlogs].sort((a, b) => b.likes - a.likes)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [user, setUser] = useState(null)
+  const user = useSelector((state) => state.user)
   // const [message, setMessage] = useState(null)
   const message = useSelector((state) => state.message)
 
@@ -28,7 +33,7 @@ const App = () => {
     const loggenUserJSON = window.localStorage.getItem('loggedBlogappUser')
     if (loggenUserJSON) {
       const user = JSON.parse(loggenUserJSON)
-      setUser(user)
+      dispatch(setLoggedin(user))
       blogService.setToken(user.token)
     }
   }, [])
@@ -45,7 +50,7 @@ const App = () => {
       window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user))
       blogService.setToken(user.token)
 
-      setUser(user)
+      dispatch(setLoggedin(user))
       console.log('logging in with', username, password)
       setUsername('')
       setPassword('')
@@ -55,7 +60,7 @@ const App = () => {
   }
 
   const handleLogout = () => {
-    setUser(null)
+    dispatch(setLoggedout(null))
     window.localStorage.removeItem('loggedBlogappUser')
   }
 
@@ -96,6 +101,9 @@ const App = () => {
     // setLikes(likes + 1)
   }
 
+  const userMatch = useMatch('/users/:id')
+  const blogMatch = useMatch('/blogs/:id')
+
   return (
     <div>
       {user === null ? (
@@ -106,20 +114,56 @@ const App = () => {
           <Notification type="success" message={message} />
           <p>{user.name} logged-in</p>
           <button onClick={handleLogout}>logout</button>
-          <Togglable buttonLabel="new blogs">
-            <BlogForm createBlog={addBlog} />
-          </Togglable>
-          <div className="blog-list">
-            {sortedBlogs.map((blog) => (
-              <Blog
-                className="blog"
-                key={blog.id}
-                blog={blog}
-                blogs={sortedBlogs}
-                handleLike={() => handleLikeOf(blog.id)}
-              />
-            ))}
-          </div>
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <>
+                  <Togglable buttonLabel="new blogs">
+                    <BlogForm createBlog={addBlog} />
+                  </Togglable>
+                  <div>
+                    {sortedBlogs.map((blog) => (
+                      <Link
+                        key={sortedBlogs.indexOf(blog)}
+                        to={`/blogs/${blog.id}`}
+                      >
+                        <p>title: {blog.title}</p>
+                      </Link>
+                    ))}
+                  </div>
+                </>
+              }
+            />
+            <Route
+              path="/users/:id"
+              element={
+                <BlogList
+                  id={userMatch ? userMatch.params.id : null}
+                  rawBlogs={rawBlogs}
+                />
+              }
+            />
+            <Route
+              path="/blogs/:id"
+              element={
+                <Blog
+                  className="blog"
+                  key={blogMatch ? blogMatch.params.id : null}
+                  blog={
+                    blogMatch
+                      ? rawBlogs.filter(
+                        (blog) => blog.id === blogMatch.params.id
+                      )
+                      : null
+                  }
+                  blogs={sortedBlogs}
+                  handleLike={() => handleLikeOf(blogMatch.params.id)}
+                />
+              }
+            />
+            <Route path="/users" element={<UserList />} />
+          </Routes>
         </div>
       )}
     </div>
